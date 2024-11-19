@@ -3,27 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:growmate/auth.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class Appoggio extends StatefulWidget {
+  const Appoggio({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<Appoggio> createState() => _Appoggio();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _Appoggio extends State<Appoggio> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
-  Future<void> signIn() async {
-    try {
-      await Auth().signInWithEmailAndPassword(
-          email: _email.text, password: _password.text);
-    } on FirebaseAuthException catch (error) {
-      // Gestione errori (puoi personalizzare il messaggio di errore)
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Errore: ${error.message}'),
-      ));
-    }
+  Future<void> signOut() async {
+    
+      await Auth().signOut();    
   }
 
   @override
@@ -46,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 20),
               // Titolo
               const Text(
-                'Accedi a Growmate',
+                'Accesso a Growmate',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -82,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
               // Bottone di accesso
               ElevatedButton(
-                onPressed: signIn,
+                onPressed: signOut,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
@@ -91,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundColor: Colors.green, // Colore del pulsante
                 ),
                 child: const Text(
-                  'Accedi',
+                  'Esci',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
