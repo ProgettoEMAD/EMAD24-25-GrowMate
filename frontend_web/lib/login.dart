@@ -13,6 +13,18 @@ class Login extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.1,
             child: Row(
               children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      size: 28,
+                    ),
+                  ),
+                ),
                 SizedBox(
                   width: MediaQuery.of(context).size.height * 0.1,
                   height: MediaQuery.of(context).size.height * 0.1,
