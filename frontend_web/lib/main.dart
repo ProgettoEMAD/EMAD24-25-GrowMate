@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:growmate_web/login.dart';
+import 'package:growmate_web/register.dart';
 import 'package:growmate_web/vivaio.dart';
 
 void main() {
@@ -92,7 +93,11 @@ class App extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Add your onPressed code here!
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => Register(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
