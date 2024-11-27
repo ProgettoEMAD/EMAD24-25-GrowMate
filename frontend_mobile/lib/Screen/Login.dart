@@ -19,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
       await Auth().signInWithEmailAndPassword(
           email: _email.text, password: _password.text);
     } on FirebaseAuthException catch (error) {
-      // Gestione errori (puoi personalizzare il messaggio di errore)
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Errore: ${error.message}'),
       ));

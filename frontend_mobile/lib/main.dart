@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:growmate/Screen/Appoggio.dart';
 import 'package:growmate/Screen/Login.dart';
+import 'package:growmate/Screen/home.dart';
 import 'package:growmate/auth.dart';
 import 'firebase_options.dart';
 
@@ -33,7 +34,7 @@ class _MyAppState extends State<MyApp>{
         stream: Auth().authStateChanges,
         builder: (context, snapshot){
           if(snapshot.hasData){
-            return Appoggio();
+            return home();
           }
           else{
             return LoginScreen();
