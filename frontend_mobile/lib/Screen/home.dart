@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:growmate/Screen/pagina_pianta.dart';
+import 'package:growmate/auth.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -11,7 +13,7 @@ class _HomeState extends State<Home> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String? userVivaioId; // ID del vivaio dell'utente
+  Map<String, dynamic>? vivaioData; // Memorizza i dati del vivaio
   List<Map<String, dynamic>> lotti = []; // Lista dei lotti
   bool isLoading = true; // Stato per mostrare o nascondere il caricamento
 
@@ -20,7 +22,10 @@ class _HomeState extends State<Home> {
     super.initState();
     _fetchUserLotti();
   }
-
+  Future<void> signOut() async {
+    
+      await Auth().signOut();    
+  }
   // Recupera i lotti del vivaio associato all'utente autenticato
   Future<void> _fetchUserLotti() async {
     try {
@@ -67,6 +72,12 @@ class _HomeState extends State<Home> {
         return;
       }
 
+      // Memorizza i dati del vivaio
+      setState(() {
+        vivaioData = vivaioDoc.docs.first.data();
+      });
+      print("Dati del vivaio: $vivaioData");
+
       // Ottieni l'array degli ID dei lotti
       final List<dynamic> lottiIds = vivaioDoc.docs.first['lotti'];
       print("Lista di ID dei lotti trovata: $lottiIds");
@@ -98,9 +109,31 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vivavio Bello srl'),
-        backgroundColor: Colors.green,
+  title: Text(vivaioData != null ? '${vivaioData!['nome']}' : 'Caricamento...'),
+  backgroundColor: Colors.green,
+  actions: [
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: ElevatedButton(
+        onPressed: signOut, // Funzione per il logout
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: Colors.white, // Colore del pulsante
+        ),
+        child: const Text(
+          'Esci',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.green, // Colore del testo
+          ),
+        ),
       ),
+    ),
+  ],
+),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isLoading
@@ -122,6 +155,14 @@ class _HomeState extends State<Home> {
                         plantName: lotto['coltura'] ?? 'N/A',
                         lotNumber: lotto['id_lotto'] ?? 'N/A',
                         sowingDate: lotto['data_semina'] ?? 'N/A',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DettaglioLottoScreen(lotto: lotto),
+                            ),
+                          );
+                        },
                       );
                     },
                   ),
@@ -134,53 +175,58 @@ class ScanCard extends StatelessWidget {
   final String plantName;
   final String lotNumber;
   final String sowingDate;
+  final VoidCallback? onTap; // Callback per il clic
 
   const ScanCard({
     required this.plantName,
     required this.lotNumber,
     required this.sowingDate,
+    this.onTap, // Callback opzionale
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.green[100],
-                borderRadius: BorderRadius.circular(8),
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+        margin: EdgeInsets.symmetric(vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.eco,
+                  color: Colors.green,
+                  size: 30,
+                ),
               ),
-              child: Icon(
-                Icons.eco,
-                color: Colors.green,
-                size: 30,
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      plantName,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Text("Lotto $lotNumber"),
+                    SizedBox(height: 8),
+                    Text(
+                      "Data semina: $sowingDate",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    plantName,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text("Lotto $lotNumber"),
-                  SizedBox(height: 8),
-                  Text(
-                    "Data semina: $sowingDate",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
