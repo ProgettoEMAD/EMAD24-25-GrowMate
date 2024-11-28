@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp>{
         stream: Auth().authStateChanges,
         builder: (context, snapshot){
           if(snapshot.hasData){
-            return home();
+            return Home();
           }
           else{
             return LoginScreen();
