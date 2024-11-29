@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa FirebaseAuth
 import 'package:growmate_web/firebase_options.dart';
 import 'package:growmate_web/login.dart';
-import 'package:growmate_web/register.dart';
 import 'package:growmate_web/vivaio.dart';
 
 void main() async {
@@ -21,8 +21,26 @@ class Web extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: App(),
+      home: AuthWrapper(), // Modificato per includere il controllo autenticazione
     );
+  }
+}
+
+// Questa classe gestisce la logica di reindirizzamento in base all'autenticazione
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Ottiene l'utente attualmente autenticato
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    // Se l'utente è autenticato, reindirizza a VivaioScreen, altrimenti alla schermata iniziale
+    if (user != null) {
+      return const VivaioScreen(); // Schermata principale per l'utente autenticato
+    } else {
+      return const App(); // Schermata iniziale per l'utente non autenticato
+    }
   }
 }
 
@@ -92,7 +110,7 @@ class App extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Registrati per vedere un nuovo modo per gestire le piante",
+                  "Accedi per gestire il tuo vivaio",
                   style: Theme.of(context)
                       .textTheme
                       .displayMedium
@@ -102,7 +120,7 @@ class App extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => Register(),
+                        builder: (_) => Login(),
                       ),
                     );
                   },
@@ -111,7 +129,7 @@ class App extends StatelessWidget {
                     foregroundColor: Colors.white,
                   ),
                   child: Text(
-                    'Registrati',
+                    'Accedi',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold, color: Colors.white),
                   ),

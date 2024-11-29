@@ -1,11 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:growmate_web/vivaio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
+Future<void> login(BuildContext context) async {
+  try {
+    final UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+
+    // Salva l'UID dell'utente in SharedPreferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('uid', userCredential.user!.uid);
+
+    // Naviga alla pagina Vivaio
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => VivaioScreen()),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
+  }
+}
+
     return Scaffold(
       body: Column(
         children: [
@@ -47,7 +77,7 @@ class Login extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 children: [
                   Text(
@@ -57,20 +87,22 @@ class Login extends StatelessWidget {
                         .displayMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
-                      decoration: InputDecoration(
+                      controller: emailController,
+                      decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Username',
+                        labelText: 'Email',
                       ),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
+                      controller: passwordController,
                       obscureText: true,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Password',
                       ),
@@ -81,9 +113,7 @@ class Login extends StatelessWidget {
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                     ),
-                    onPressed: () {
-                      // Handle login logic here
-                    },
+                    onPressed: () => login(context),
                     child: Text(
                       'Login',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
