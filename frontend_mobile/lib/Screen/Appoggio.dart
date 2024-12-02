@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:growmate/auth.dart';
 
 class Appoggio extends StatefulWidget {
-  const Appoggio({Key? key}) : super(key: key);
+  const Appoggio({super.key});
 
   @override
   State<Appoggio> createState() => _Appoggio();

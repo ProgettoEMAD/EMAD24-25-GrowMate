@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class DettaglioLottoScreen extends StatelessWidget {
   final Map<String, dynamic> lotto;
 
-  const DettaglioLottoScreen({required this.lotto});
+  const DettaglioLottoScreen({super.key, required this.lotto});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Dettaglio Lotto"),
+        title: const Text("Dettaglio Lotto"),
         backgroundColor: Colors.green,
       ),
       body: Padding(
@@ -19,25 +19,25 @@ class DettaglioLottoScreen extends StatelessWidget {
           children: [
             Text(
               "Lotto: ${lotto['id_lotto']}",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "Coltura: ${lotto['coltura'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "Data Semina: ${lotto['data_semina'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             Text(
               "Data Consegna: ${lotto['data_consegna'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             Text(
               "Fallanza: ${lotto['fallanza'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),

@@ -5,6 +5,8 @@ import 'package:growmate/Screen/pagina_pianta.dart';
 import 'package:growmate/auth.dart';
 
 class Home extends StatefulWidget {
+  const Home({super.key});
+
   @override
   State<Home> createState() => _HomeState();
 }
@@ -93,7 +95,7 @@ class _HomeState extends State<Home> {
       // Aggiorna lo stato con i dettagli dei lotti
       setState(() {
         lotti = lottiSnapshot.docs
-            .map((doc) => doc.data() as Map<String, dynamic>)
+            .map((doc) => doc.data())
             .toList();
         isLoading = false;
       });
@@ -137,11 +139,11 @@ class _HomeState extends State<Home> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isLoading
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(),
               )
             : lotti.isEmpty
-                ? Center(
+                ? const Center(
                     child: Text(
                       "Lotti non disponibili",
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -177,7 +179,7 @@ class ScanCard extends StatelessWidget {
   final String sowingDate;
   final VoidCallback? onTap; // Callback per il clic
 
-  const ScanCard({
+  const ScanCard({super.key, 
     required this.plantName,
     required this.lotNumber,
     required this.sowingDate,
@@ -189,7 +191,7 @@ class ScanCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Card(
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -201,26 +203,26 @@ class ScanCard extends StatelessWidget {
                   color: Colors.green[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.eco,
                   color: Colors.green,
                   size: 30,
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       plantName,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Text("Lotto $lotNumber"),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       "Data semina: $sowingDate",
-                      style: TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ],
                 ),

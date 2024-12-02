@@ -80,7 +80,7 @@ class _VivaioScreenState extends State<VivaioScreen> {
       // Aggiorna lo stato con i dettagli dei lotti
       setState(() {
         lotti = lottiSnapshot.docs
-            .map((doc) => doc.data() as Map<String, dynamic>)
+            .map((doc) => doc.data())
             .toList();
         isLoading = false;
       });

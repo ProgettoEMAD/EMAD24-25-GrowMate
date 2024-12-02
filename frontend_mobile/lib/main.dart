@@ -16,7 +16,7 @@ void main() async{
 }
 
 class MyApp extends StatefulWidget {
-   MyApp({super.key});
+   const MyApp({super.key});
 
 
    @override
@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp>{
             return Home();
           }
           else{
-            return LoginScreen();
+            return const LoginScreen();
           }
         },
         ),
