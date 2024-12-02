@@ -101,9 +101,7 @@ class _HomeState extends State<Home> {
       });
     } catch (e) {
       print("Errore durante il recupero dei dati: $e");
-      setState(() {
-        isLoading = false;
-      });
+      
     }
   }
 
