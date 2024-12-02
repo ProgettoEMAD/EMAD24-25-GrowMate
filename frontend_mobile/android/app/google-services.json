@@ -7,9 +7,47 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:468005646926:android:4dda361c887cd9a59d491f",
+        "android_client_info": {
+          "package_name": "com.growmate.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNSznFhKARtKTS4DwrMzEWiRzLlX6LYGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:468005646926:android:525ea8fcbbf4ccc69d491f",
         "android_client_info": {
           "package_name": "com.progetto_emad.frontend_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNSznFhKARtKTS4DwrMzEWiRzLlX6LYGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:468005646926:android:f17fb638899bc34a9d491f",
+        "android_client_info": {
+          "package_name": "com.progetto_emad.growmate"
         }
       },
       "oauth_client": [],

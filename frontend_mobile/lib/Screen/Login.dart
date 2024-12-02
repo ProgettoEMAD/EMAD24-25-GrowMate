@@ -18,6 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _emailError;
   String? _passwordError;
 
+  bool _obscurePwd = true;
+
   Future<void> signIn() async {
     setState(() {
       _emailError = null;
@@ -121,9 +123,12 @@ class _LoginScreenState extends State<LoginScreen> {
               // Campo password
               TextField(
                 controller: _password,
-                obscureText: true,
+                obscureText: _obscurePwd,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock),
+                  suffix: InkWell(child: Icon(_obscurePwd ? Icons.visibility : Icons.visibility_off), onTap: () => setState(() {
+                    _obscurePwd = !_obscurePwd;
+                  }),),
                   labelText: 'Password',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),

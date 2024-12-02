@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:growmate/Screen/pagina_pianta.dart';
 import 'package:growmate/auth.dart';
+import 'package:growmate/Screen/Login.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -26,7 +27,12 @@ class _HomeState extends State<Home> {
   }
   Future<void> signOut() async {
     
-      await Auth().signOut();    
+      await Auth().signOut();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()), 
+      ); 
   }
   // Recupera i lotti del vivaio associato all'utente autenticato
   Future<void> _fetchUserLotti() async {

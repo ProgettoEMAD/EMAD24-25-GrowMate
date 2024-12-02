@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCNSznFhKARtKTS4DwrMzEWiRzLlX6LYGg',
-    appId: '1:468005646926:android:525ea8fcbbf4ccc69d491f',
+    appId: '1:468005646926:android:f17fb638899bc34a9d491f',
     messagingSenderId: '468005646926',
     projectId: 'growmate-31448',
     storageBucket: 'growmate-31448.firebasestorage.app',
@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'growmate-31448.firebasestorage.app',
     iosBundleId: 'com.progettoemad.growmate',
   );
+
 }
