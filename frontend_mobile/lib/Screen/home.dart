@@ -165,7 +165,7 @@ class _HomeState extends State<Home> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DettaglioLottoScreen(lotto: lotto),
+                              builder: (context) => LottoDetailPage(lotto: lotto),
                             ),
                           );
                         },
