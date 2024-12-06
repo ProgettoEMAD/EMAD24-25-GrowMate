@@ -4,40 +4,49 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:growmate_web/vivaio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  static const String routeName = "login";
+
   const Login({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-
-Future<void> login(BuildContext context) async {
-  try {
-    final UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-
-    // Salva l'UID dell'utente in SharedPreferences
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('uid', userCredential.user!.uid);
-
-    // Naviga alla pagina Vivaio
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => VivaioScreen()),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $e')),
-    );
-  }
+  State<Login> createState() => _LoginState();
 }
+
+class _LoginState extends State<Login> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
+    Future<void> login(BuildContext context) async {
+      try {
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+
+        // Salva l'UID dell'utente in SharedPreferences
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('uid', userCredential.user!.uid);
+
+        // Naviga alla pagina Vivaio
+        Navigator.of(context).pushReplacementNamed(VivaioScreen.routeName);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
 
     return Scaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.1,
@@ -91,8 +100,11 @@ Future<void> login(BuildContext context) async {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
                       controller: emailController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         labelText: 'Email',
                       ),
                     ),
@@ -101,9 +113,29 @@ Future<void> login(BuildContext context) async {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
                       controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                        suffix: IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          icon: _obscureText
+                              ? Icon(
+                                  Icons.visibility,
+                                  color: Colors.green,
+                                )
+                              : Icon(
+                                  Icons.visibility_off,
+                                  color: Colors.green,
+                                ),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         labelText: 'Password',
                       ),
                     ),
@@ -113,11 +145,26 @@ Future<void> login(BuildContext context) async {
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                     ),
-                    onPressed: () => login(context),
-                    child: Text(
-                      'Login',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold, color: Colors.white),
+                    onPressed: () {
+                      if (RegExp(
+                              r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$')
+                          .hasMatch(emailController.text)) {
+                        login(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Email non valida'),
+                          ),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Login',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
                     ),
                   ),
                 ],

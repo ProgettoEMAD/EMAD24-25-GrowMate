@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Importa FirebaseAuth
+import 'package:growmate_web/register.dart';
 import 'firebase_options.dart';
 import 'package:growmate_web/login.dart';
 import 'package:growmate_web/vivaio.dart';
@@ -20,31 +21,23 @@ class Web extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: AuthWrapper(), // Modificato per includere il controllo autenticazione
+    return MaterialApp(
+      routes: {
+        App.routeName: (context) => const App(),
+        Login.routeName: (context) => const Login(),
+        VivaioScreen.routeName: (context) => const VivaioScreen(),
+        Register.routeName: (context) => const Register(),
+      },
+      initialRoute: FirebaseAuth.instance.currentUser != null
+          ? VivaioScreen.routeName
+          : App.routeName,
     );
   }
 }
 
-// Questa classe gestisce la logica di reindirizzamento in base all'autenticazione
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Ottiene l'utente attualmente autenticato
-    final User? user = FirebaseAuth.instance.currentUser;
-
-    // Se l'utente è autenticato, reindirizza a VivaioScreen, altrimenti alla schermata iniziale
-    if (user != null) {
-      return const VivaioScreen(); // Schermata principale per l'utente autenticato
-    } else {
-      return const App(); // Schermata iniziale per l'utente non autenticato
-    }
-  }
-}
-
 class App extends StatelessWidget {
+  static const String routeName = "app";
+
   const App({super.key});
 
   @override
@@ -81,15 +74,11 @@ class App extends StatelessWidget {
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Padding(
-                  padding: EdgeInsets.only(left: 4.0),
+                  padding: EdgeInsets.only(left: 16),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => Login(),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed(Login.routeName);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -116,13 +105,10 @@ class App extends StatelessWidget {
                       .displayMedium
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
+                Padding(padding: EdgeInsets.only(top: 16)),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => Login(),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed(Login.routeName);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -131,7 +117,9 @@ class App extends StatelessWidget {
                   child: Text(
                     'Accedi',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold, color: Colors.white),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                   ),
                 ),
               ],

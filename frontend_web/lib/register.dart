@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class Register extends StatelessWidget {
+  static const String routeName = "register";
+
   const Register({super.key});
 
   @override

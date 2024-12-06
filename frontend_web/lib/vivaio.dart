@@ -5,6 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:growmate_web/inserimentolotto.dart';
 
 class VivaioScreen extends StatefulWidget {
+  static const String routeName = "vivaio";
+
   const VivaioScreen({super.key});
 
   @override
@@ -40,7 +42,8 @@ class _VivaioScreenState extends State<VivaioScreen> {
           .get();
 
       if (userDoc.docs.isEmpty) {
-        print("Nessun documento trovato nella collezione 'Utenti' per l'UID fornito.");
+        print(
+            "Nessun documento trovato nella collezione 'Utenti' per l'UID fornito.");
         setState(() {
           isLoading = false;
         });
@@ -75,13 +78,12 @@ class _VivaioScreenState extends State<VivaioScreen> {
           .where('id_lotto', whereIn: lottiIds)
           .get();
 
-      print("Query Lotti restituita: ${lottiSnapshot.docs.map((doc) => doc.data())}");
+      print(
+          "Query Lotti restituita: ${lottiSnapshot.docs.map((doc) => doc.data())}");
 
       // Aggiorna lo stato con i dettagli dei lotti
       setState(() {
-        lotti = lottiSnapshot.docs
-            .map((doc) => doc.data())
-            .toList();
+        lotti = lottiSnapshot.docs.map((doc) => doc.data()).toList();
         isLoading = false;
       });
     } catch (e) {
@@ -102,20 +104,16 @@ class _VivaioScreenState extends State<VivaioScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green.shade300,
-        title: Row(
-          children: [
-            SizedBox(
-                  width: MediaQuery.of(context).size.height * 0.1,
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  child: SvgPicture.asset('assets/logo.svg'),
-                ),
-            const SizedBox(width: 10),
-            const Text(
-              "Benvenuto nel tuo vivaio",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.green.withValues(alpha: 0.1),
+        leading: SvgPicture.asset('assets/logo.svg'),
+        centerTitle: false,
+        title: const Text(
+          "Benvenuto nel tuo vivaio",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
@@ -148,39 +146,50 @@ class _VivaioScreenState extends State<VivaioScreen> {
                             style: TextStyle(fontSize: 16),
                           ),
                         )
-                      : ListView.builder(
+                      : ListView.separated(
                           itemCount: lotti.length,
+                          padding: EdgeInsets.all(16),
                           itemBuilder: (context, index) {
                             final lotto = lotti[index];
                             return ListTile(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                ),
+                              ),
                               leading: const Icon(Icons.grass),
                               title: Text(
                                 lotto['id_lotto'] ?? 'Lotto senza nome',
                                 style: const TextStyle(fontSize: 16),
                               ),
                               subtitle: Text(
-                                lotto['coltura'] ?? 'Nessuna descrizione disponibile',
+                                lotto['coltura'] ??
+                                    'Nessuna descrizione disponibile',
                                 style: const TextStyle(fontSize: 14),
                               ),
-                              onTap: () {
-                                
-                              },
+                              onTap: () {},
                             );
                           },
+                          separatorBuilder: (context, index) => SizedBox(
+                            height: 16,
+                          ),
                         ),
                 ),
               ],
             ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
         onPressed: () {
           Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => InserimentoLotto(),
-                                    ),
+            MaterialPageRoute(
+              builder: (_) => InserimentoLotto(),
+            ),
           );
         },
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: Text("Aggiungi lotto"),
       ),
     );
   }
