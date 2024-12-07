@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:growmate_web/inserimentolotto.dart';
+import 'package:growmate_web/model/lotto.dart';
 
 class VivaioScreen extends StatefulWidget {
   static const String routeName = "vivaio";
@@ -18,7 +19,7 @@ class _VivaioScreenState extends State<VivaioScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   bool isLoading = true; // Indica se i dati sono in caricamento
-  List<Map<String, dynamic>> lotti = []; // Lista dei lotti recuperati
+  List<Lotto> lotti = []; // Lista dei lotti recuperati
 
   // Funzione per recuperare i lotti
   Future<void> _fetchUserLotti() async {
@@ -83,7 +84,10 @@ class _VivaioScreenState extends State<VivaioScreen> {
 
       // Aggiorna lo stato con i dettagli dei lotti
       setState(() {
-        lotti = lottiSnapshot.docs.map((doc) => doc.data()).toList();
+        lotti = lottiSnapshot.docs
+            .map((doc) => doc.data())
+            .map((l) => Lotto.fromJson(l))
+            .toList();
         isLoading = false;
       });
     } catch (e) {
@@ -160,12 +164,11 @@ class _VivaioScreenState extends State<VivaioScreen> {
                               ),
                               leading: const Icon(Icons.grass),
                               title: Text(
-                                lotto['id_lotto'] ?? 'Lotto senza nome',
+                                lotto.coltura,
                                 style: const TextStyle(fontSize: 16),
                               ),
                               subtitle: Text(
-                                lotto['coltura'] ??
-                                    'Nessuna descrizione disponibile',
+                                "${lotto.piante} piante in ${lotto.vassoi} vassoi",
                                 style: const TextStyle(fontSize: 14),
                               ),
                               onTap: () {},
