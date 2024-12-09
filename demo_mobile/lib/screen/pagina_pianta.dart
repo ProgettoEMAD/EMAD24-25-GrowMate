@@ -62,6 +62,13 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
               "Fallanza: ${widget.lotto['fallanza'] ?? 'N/A'}",
               style: const TextStyle(fontSize: 16),
             ),
+            const SizedBox(height: 8),
+            _image.isNotEmpty
+                ? Text(
+                    "Foto scattate: ${_image.length}",
+                    style: const TextStyle(fontSize: 16),
+                  )
+                : const SizedBox(),
             const Spacer(),
             if (_image.isNotEmpty)
               SizedBox(
@@ -110,7 +117,7 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                         return CameraPreviewWidget(
                           pictureCallback: (XFile image) {
                             setState(() {
-                              _image.add(File(image.path));
+                              _image.insert(0, File(image.path));
                             });
                           },
                         );
@@ -236,69 +243,89 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        if (_cameraController != null && _cameraController!.value.isInitialized)
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return SizedBox(
-                width: constraints.maxWidth,
-                height: constraints.maxHeight,
-                child: CameraPreview(
-                  _cameraController!,
-                  child: SizedBox(
-                    width: constraints.maxWidth,
-                    height: constraints.maxHeight,
-                    child: Placeholder(),
+    return Material(
+      child: Stack(
+        children: [
+          if (_cameraController != null &&
+              _cameraController!.value.isInitialized)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SizedBox(
+                  width: constraints.maxWidth,
+                  height: constraints.maxHeight,
+                  child: CameraPreview(
+                    _cameraController!,
+                    child: SizedBox(
+                      width: constraints.maxWidth,
+                      height: constraints.maxHeight,
+                      child: Center(
+                        child: Container(
+                          width: constraints.maxWidth * .7,
+                          height: constraints.maxHeight * .5,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        const SizedBox(height: 16),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: _takePicture,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16.0, horizontal: 24.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                );
+              },
+            ),
+          const SizedBox(height: 16),
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: InkWell(
+              onTap: () => _takePicture(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Icon(Icons.camera_alt_outlined),
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "Clicca qui per scattare una foto",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const Text("Vassoio rilevato!")
+                          ],
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            _isFlashOn ? Icons.flash_off : Icons.flash_on,
+                          ),
+                          onPressed: _toggleFlash,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                child: const Text(
-                  "Scatta Foto",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                ],
               ),
-              const SizedBox(width: 16),
-              ElevatedButton(
-                onPressed: _toggleFlash,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isFlashOn ? Colors.yellow : Colors.grey,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16.0, horizontal: 24.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Text(
-                  _isFlashOn ? "Disabilita Flash" : "Abilita Flash",
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
