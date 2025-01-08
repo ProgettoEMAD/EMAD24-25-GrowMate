@@ -60,6 +60,7 @@ flutter:
     - assets/illustration1.svg
     - assets/illustration2.svg
     - assets/illustration3.svg
+    - assets/illustration4.svg
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

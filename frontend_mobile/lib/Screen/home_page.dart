@@ -7,7 +7,6 @@ import 'package:growmate/common/const.dart';
 import 'package:growmate/screen/pagina_pianta.dart';
 import 'package:growmate/auth.dart';
 import 'package:growmate/screen/login_page.dart';
-import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

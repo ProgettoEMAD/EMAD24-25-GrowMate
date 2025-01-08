@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_svg/svg.dart';
 import 'dart:io';
 
 import 'package:growmate/common/colors.dart';
+import 'package:growmate/common/const.dart';
 
 class LottoDetailPage extends StatefulWidget {
   final Map<String, dynamic> lotto;
@@ -69,39 +71,77 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kBrownLight,
       appBar: AppBar(
         title: const Text("Dettaglio Lotto"),
         backgroundColor: kGreenDark,
         foregroundColor: Colors.white,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Lotto: ${widget.lotto['id_lotto']}",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Coltura: ${widget.lotto['coltura'] ?? 'N/A'}",
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Data Semina: ${widget.lotto['data_semina'] ?? 'N/A'}",
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Data Consegna: ${widget.lotto['data_consegna'] ?? 'N/A'}",
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Fallanza: ${widget.lotto['fallanza'] ?? 'N/A'}",
-              style: const TextStyle(fontSize: 16),
+            Container(
+              width: double.infinity,
+              color: kBrownAccent,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 200,
+                    child: SvgPicture.asset(
+                      'assets/illustration4.svg',
+                      semanticsLabel: 'Illustrazione di una porta',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Coltura: ${widget.lotto['coltura'] ?? 'N/A'}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Text(
+                          "Lotto: ${widget.lotto['id_lotto']}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          "Fallanza: ${widget.lotto['fallanza'] ?? 'N/A'}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          "Data semina: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(widget.lotto['data_semina'] as int))}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          "Data consegna: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(widget.lotto['data_consegna'] as int))}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             const Spacer(),
             if (_image != null)
@@ -143,10 +183,20 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                   ),
                 ),
               ),
-            if (_cameraController == null ||
+            if (_cameraController == null)
+              const Center(
+                child: Text(
+                  "Nessuna fotocamera trovata",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            if (_cameraController != null &&
                 !_cameraController!.value.isInitialized)
-              Center(
-                child: const CircularProgressIndicator(),
+              const Center(
+                child: CircularProgressIndicator(),
               ),
           ],
         ),
