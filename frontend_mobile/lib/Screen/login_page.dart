@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:growmate/auth.dart';
 import 'package:growmate/common/colors.dart';
-import 'package:growmate/screen/home.dart'; // Importa la schermata Home
+import 'package:growmate/screen/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -190,95 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Illustrazione
-              SizedBox(
-                height: 200,
-                child: SvgPicture.asset(
-                  'assets/porta.svg',
-                  semanticsLabel: 'Illustrazione di una porta',
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Titolo
-              const Text(
-                'Accedi a Growmate',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-              // Campo email
-              TextField(
-                controller: _email,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.email),
-                  labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorText: _emailError, // Mostra l'errore accanto al campo
-                ),
-                onChanged: (_) => setState(() => _emailError = null),
-              ),
-              const SizedBox(height: 20),
-              // Campo password
-              TextField(
-                controller: _password,
-                obscureText: _obscurePwd,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock),
-                  suffix: InkWell(
-                    child: Icon(
-                        _obscurePwd ? Icons.visibility : Icons.visibility_off),
-                    onTap: () => setState(() {
-                      _obscurePwd = !_obscurePwd;
-                    }),
-                  ),
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorText: _passwordError, // Mostra l'errore accanto al campo
-                ),
-                onChanged: (_) => setState(() => _passwordError = null),
-              ),
-              const SizedBox(height: 30),
-              // Bottone di accesso
-              ElevatedButton(
-                onPressed: _isLoading ? null : signIn,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  backgroundColor: Colors.green,
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(
-                        color: Colors.white,
-                      )
-                    : const Text(
-                        'Accedi',
-                        style: TextStyle(fontSize: 16),
-                      ),
               ),
             ],
           ),
