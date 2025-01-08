@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
 
+import 'package:growmate/common/colors.dart';
+
 class LottoDetailPage extends StatefulWidget {
   final Map<String, dynamic> lotto;
 
@@ -23,25 +25,25 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
   }
 
   Future<void> _initializeCamera() async {
-  try {
-    _cameras = await availableCameras();
-    if (_cameras!.isNotEmpty) {
-      _cameraController = CameraController(
-        _cameras![0],
-        ResolutionPreset.medium,
-      );
-      await _cameraController!.initialize();
-      setState(() {});
-    } else {
-      throw Exception("No cameras found");
+    try {
+      _cameras = await availableCameras();
+      if (_cameras!.isNotEmpty) {
+        _cameraController = CameraController(
+          _cameras![0],
+          ResolutionPreset.medium,
+        );
+        await _cameraController!.initialize();
+        setState(() {});
+      } else {
+        throw Exception("No cameras found");
+      }
+    } catch (e) {
+      print("Errore durante l'inizializzazione della fotocamera: $e");
+      setState(() {
+        _cameraController = null; // Assicura che la fotocamera non venga usata
+      });
     }
-  } catch (e) {
-    print("Errore durante l'inizializzazione della fotocamera: $e");
-    setState(() {
-      _cameraController = null; // Assicura che la fotocamera non venga usata
-    });
   }
-}
 
   Future<void> _takePicture() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
@@ -69,7 +71,8 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dettaglio Lotto"),
-        backgroundColor: Colors.green,
+        backgroundColor: kGreenDark,
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -107,7 +110,8 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                   children: [
                     const Text(
                       "Immagine scattata:",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Image.file(
@@ -120,13 +124,15 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                 ),
               ),
             const SizedBox(height: 16),
-            if (_cameraController != null && _cameraController!.value.isInitialized)
+            if (_cameraController != null &&
+                _cameraController!.value.isInitialized)
               Center(
                 child: ElevatedButton(
                   onPressed: _takePicture,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -137,7 +143,8 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                   ),
                 ),
               ),
-            if (_cameraController == null || !_cameraController!.value.isInitialized)
+            if (_cameraController == null ||
+                !_cameraController!.value.isInitialized)
               Center(
                 child: const CircularProgressIndicator(),
               ),

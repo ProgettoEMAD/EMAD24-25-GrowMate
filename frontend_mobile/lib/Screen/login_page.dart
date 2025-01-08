@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:growmate/auth.dart';
 import 'package:growmate/common/colors.dart';
-import 'package:growmate/screen/home.dart';
+import 'package:growmate/screen/home_page.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -57,8 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  const Home()), // Naviga alla tua schermata Home
+            builder: (context) => const Home(),
+          ),
         );
       }
     } on FirebaseAuthException catch (error) {
