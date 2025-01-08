@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:growmate/Screen/pagina_pianta.dart';
+import 'package:growmate/screen/pagina_pianta.dart';
 import 'package:growmate/auth.dart';
-import 'package:growmate/Screen/Login.dart';
+import 'package:growmate/screen/login_page.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,15 +25,16 @@ class _HomeState extends State<Home> {
     super.initState();
     _fetchUserLotti();
   }
-  Future<void> signOut() async {
-    
-      await Auth().signOut();
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()), 
-      ); 
+  Future<void> signOut() async {
+    await Auth().signOut();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
   }
+
   // Recupera i lotti del vivaio associato all'utente autenticato
   Future<void> _fetchUserLotti() async {
     try {
@@ -55,7 +56,8 @@ class _HomeState extends State<Home> {
           .get();
 
       if (userDoc.docs.isEmpty) {
-        print("Nessun documento trovato nella collezione 'Utenti' per l'UID fornito.");
+        print(
+            "Nessun documento trovato nella collezione 'Utenti' per l'UID fornito.");
         setState(() {
           isLoading = false;
         });
@@ -96,18 +98,16 @@ class _HomeState extends State<Home> {
           .where('id_lotto', whereIn: lottiIds)
           .get();
 
-      print("Query Lotti restituita: ${lottiSnapshot.docs.map((doc) => doc.data())}");
+      print(
+          "Query Lotti restituita: ${lottiSnapshot.docs.map((doc) => doc.data())}");
 
       // Aggiorna lo stato con i dettagli dei lotti
       setState(() {
-        lotti = lottiSnapshot.docs
-            .map((doc) => doc.data())
-            .toList();
+        lotti = lottiSnapshot.docs.map((doc) => doc.data()).toList();
         isLoading = false;
       });
     } catch (e) {
       print("Errore durante il recupero dei dati: $e");
-      
     }
   }
 
@@ -115,31 +115,33 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-  title: Text(vivaioData != null ? '${vivaioData!['nome']}' : 'Caricamento...'),
-  backgroundColor: Colors.green,
-  actions: [
-    Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: ElevatedButton(
-        onPressed: signOut, // Funzione per il logout
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+        title: Text(
+            vivaioData != null ? '${vivaioData!['nome']}' : 'Caricamento...'),
+        backgroundColor: Colors.green,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ElevatedButton(
+              onPressed: signOut, // Funzione per il logout
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: Colors.white, // Colore del pulsante
+              ),
+              child: const Text(
+                'Esci',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.green, // Colore del testo
+                ),
+              ),
+            ),
           ),
-          backgroundColor: Colors.white, // Colore del pulsante
-        ),
-        child: const Text(
-          'Esci',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.green, // Colore del testo
-          ),
-        ),
+        ],
       ),
-    ),
-  ],
-),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isLoading
@@ -150,7 +152,8 @@ class _HomeState extends State<Home> {
                 ? const Center(
                     child: Text(
                       "Lotti non disponibili",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   )
                 : ListView.builder(
@@ -165,7 +168,8 @@ class _HomeState extends State<Home> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LottoDetailPage(lotto: lotto),
+                              builder: (context) =>
+                                  LottoDetailPage(lotto: lotto),
                             ),
                           );
                         },
@@ -183,7 +187,8 @@ class ScanCard extends StatelessWidget {
   final String sowingDate;
   final VoidCallback? onTap; // Callback per il clic
 
-  const ScanCard({super.key, 
+  const ScanCard({
+    super.key,
     required this.plantName,
     required this.lotNumber,
     required this.sowingDate,
@@ -220,7 +225,8 @@ class ScanCard extends StatelessWidget {
                   children: [
                     Text(
                       plantName,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Text("Lotto $lotNumber"),
                     const SizedBox(height: 8),
