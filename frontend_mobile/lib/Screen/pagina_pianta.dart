@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_svg/svg.dart';
@@ -16,57 +18,7 @@ class LottoDetailPage extends StatefulWidget {
 }
 
 class _LottoDetailPageState extends State<LottoDetailPage> {
-  File? _image; // Per salvare l'immagine scattata
-  CameraController? _cameraController;
-  List<CameraDescription>? _cameras;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeCamera();
-  }
-
-  Future<void> _initializeCamera() async {
-    try {
-      _cameras = await availableCameras();
-      if (_cameras!.isNotEmpty) {
-        _cameraController = CameraController(
-          _cameras![0],
-          ResolutionPreset.medium,
-        );
-        await _cameraController!.initialize();
-        setState(() {});
-      } else {
-        throw Exception("No cameras found");
-      }
-    } catch (e) {
-      print("Errore durante l'inizializzazione della fotocamera: $e");
-      setState(() {
-        _cameraController = null; // Assicura che la fotocamera non venga usata
-      });
-    }
-  }
-
-  Future<void> _takePicture() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return;
-    }
-
-    try {
-      final image = await _cameraController!.takePicture();
-      setState(() {
-        _image = File(image.path);
-      });
-    } catch (e) {
-      print("Errore durante lo scatto della foto: $e");
-    }
-  }
-
-  @override
-  void dispose() {
-    _cameraController?.dispose();
-    super.dispose();
-  }
+  List<File> images = [];
 
   @override
   Widget build(BuildContext context) {
@@ -77,130 +29,554 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
         backgroundColor: kGreenDark,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              color: kBrownAccent,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 200,
-                    child: SvgPicture.asset(
-                      'assets/illustration4.svg',
-                      semanticsLabel: 'Illustrazione di una porta',
-                      fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                color: kBrownAccent,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      child: SvgPicture.asset(
+                        'assets/illustration4.svg',
+                        semanticsLabel: 'Illustrazione di una porta',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Coltura: ${widget.lotto['coltura'] ?? 'N/A'}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            "Lotto: ${widget.lotto['id_lotto']}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            "Fallanza: ${widget.lotto['fallanza'] ?? 'N/A'}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            "Data semina: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(widget.lotto['data_semina'] as int))}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            "Data consegna: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(widget.lotto['data_consegna'] as int))}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+              ),
+              if (images.isEmpty) ...[
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    "Non ci sono ancora scansioni registrate",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        List<File>? images =
+                            await Navigator.of(context).push<List<File>>(
+                          MaterialPageRoute(builder: (_) => const CameraView()),
+                        );
+
+                        if (images != null) {
+                          setState(() {
+                            this.images = images;
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kBrown,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                          horizontal: 24.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.camera_alt_rounded,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 16),
+                          Text(
+                            "Nuova scansione",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              if (images.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    "Analisi delle ${images.length} scansioni effettuate",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: kGreenDark,
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 300,
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.only(left: 16),
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: images.length,
+                    itemBuilder: (context, index) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          images[index],
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) => SizedBox(width: 8),
+                  ),
+                ),
+              ]
+              /*if (_image != null)
+                Center(
+                  child: Column(
+                    children: [
+                      const Text(
+                        "Immagine scattata:",
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Image.file(
+                        _image!,
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 16),
+              if (_cameraController != null &&
+                  _cameraController!.value.isInitialized)
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _takePicture,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 24.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "Nuova scansione",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              if (_cameraController == null)
+                const Center(
+                  child: Text(
+                    "Nessuna fotocamera trovata",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              if (_cameraController != null &&
+                  !_cameraController!.value.isInitialized)
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),*/
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CameraView extends StatefulWidget {
+  const CameraView({Key? key}) : super(key: key);
+
+  @override
+  State<CameraView> createState() => _CameraViewState();
+}
+
+class _CameraViewState extends State<CameraView> {
+  CameraController? _cameraController;
+  List<CameraDescription>? _cameras;
+
+  List<File> takenPictures = [];
+
+  Offset? _focusPoint;
+  bool _showFocusIcon = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
+  }
+
+  Future<void> _takePicture() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    try {
+      final image = await _cameraController!.takePicture();
+      setState(() {
+        takenPictures.add(File(image.path));
+      });
+    } catch (e) {
+      print("Errore durante lo scatto della foto: $e");
+    }
+  }
+
+  Future<void> _initializeCamera() async {
+    try {
+      _cameras = await availableCameras();
+      if (_cameras!.isNotEmpty) {
+        _cameraController = CameraController(
+          _cameras![0],
+          ResolutionPreset.high,
+        );
+        await _cameraController!.initialize();
+        setState(() {});
+      }
+    } catch (e) {
+      print("Error initializing camera: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    super.dispose();
+  }
+
+  void _onTapToFocus(BuildContext context, TapDownDetails details) {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Offset localPosition =
+        renderBox.globalToLocal(details.globalPosition);
+    final Size size = renderBox.size;
+
+    final Offset focusPoint = Offset(
+      localPosition.dx / size.width,
+      localPosition.dy / size.height,
+    );
+
+    _cameraController!.setFocusPoint(focusPoint);
+
+    // Mostra l'icona di focus nel punto toccato
+    setState(() {
+      _focusPoint = localPosition;
+      _showFocusIcon = true;
+    });
+
+    // Nascondi l'icona dopo 1 secondo
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        _showFocusIcon = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _cameraController != null && _cameraController!.value.isInitialized
+          ? GestureDetector(
+              onTapDown: (details) => _onTapToFocus(context, details),
+              child: Stack(
+                children: [
+                  SizedBox.expand(
+                    child: CameraPreview(_cameraController!),
+                  ),
+                  if (takenPictures.isNotEmpty) ...[
+                    Positioned(
+                      top: 64,
+                      left: 16,
+                      child: InkWell(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: kBrownLight,
+                                  iconColor: kGreenDark,
+                                  title: const Text(
+                                    "Foto scattate",
+                                    style: TextStyle(
+                                      color: kGreenDark,
+                                    ),
+                                  ),
+                                  content: SizedBox(
+                                    width: MediaQuery.of(context).size.height *
+                                        0.8,
+                                    child: GridView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: takenPictures.length,
+                                      itemBuilder: (context, index) {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          child: InkWell(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    backgroundColor:
+                                                        kBrownLight,
+                                                    contentPadding:
+                                                        EdgeInsets.zero,
+                                                    content: InkWell(
+                                                      onTap: () =>
+                                                          Navigator.of(context)
+                                                              .pop(),
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                          12,
+                                                        ),
+                                                        child: Image.file(
+                                                          takenPictures[index],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Image.file(
+                                              takenPictures[index],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        crossAxisSpacing: 8,
+                                        mainAxisSpacing: 8,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              });
+                        },
+                        child: Stack(
+                          children: [
+                            for (int i = 0; i < takenPictures.length; i++)
+                              Transform.rotate(
+                                angle: i * 0.1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: kBrownLight,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Image.file(
+                                    takenPictures[i],
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 16,
+                      top: 64,
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(takenPictures);
+                        },
+                        icon: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.green,
+                              size: 32,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (_showFocusIcon && _focusPoint != null)
+                    Positioned(
+                      top: _focusPoint!.dy - 20,
+                      left: _focusPoint!.dx - 20,
+                      child: const Icon(
+                        Icons.filter_center_focus_rounded,
+                        color: kBrownLight,
+                        size: 40,
+                      ),
+                    ),
+                  Positioned.fill(
+                    child: Stack(
                       children: [
-                        Text(
-                          "Coltura: ${widget.lotto['coltura'] ?? 'N/A'}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                        Text(
-                          "Lotto: ${widget.lotto['id_lotto']}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Text(
-                          "Fallanza: ${widget.lotto['fallanza'] ?? 'N/A'}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Text(
-                          "Data semina: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(widget.lotto['data_semina'] as int))}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Text(
-                          "Data consegna: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(widget.lotto['data_consegna'] as int))}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
+                        Center(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                            ),
+                            child: ClipRect(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+                                child: Container(
+                                  color: Colors.transparent,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
+                  Positioned(
+                      bottom: 64,
+                      left: 16,
+                      right: 16,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: () => _takePicture(),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: Stack(
+                              children: [
+                                // Blurred background
+                                BackdropFilter(
+                                  filter:
+                                      ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: kGreenDark,
+                                    ),
+                                  ),
+                                ),
+
+                                Row(
+                                  children: [
+                                    Container(
+                                      height: 70,
+                                      width: 70,
+                                      margin: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: kBrownLight,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(
+                                        Icons.eco,
+                                        color: kGreenDark,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          .6,
+                                      child: const Text(
+                                        "Clicca qui per scattare la foto!",
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          overflow: TextOverflow.clip,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )),
                 ],
               ),
+            )
+          : const Center(
+              child: CircularProgressIndicator(),
             ),
-            const Spacer(),
-            if (_image != null)
-              Center(
-                child: Column(
-                  children: [
-                    const Text(
-                      "Immagine scattata:",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Image.file(
-                      _image!,
-                      height: 200,
-                      width: 200,
-                      fit: BoxFit.cover,
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 16),
-            if (_cameraController != null &&
-                _cameraController!.value.isInitialized)
-              Center(
-                child: ElevatedButton(
-                  onPressed: _takePicture,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 24.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  child: const Text(
-                    "Nuova scansione",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            if (_cameraController == null)
-              const Center(
-                child: Text(
-                  "Nessuna fotocamera trovata",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-            if (_cameraController != null &&
-                !_cameraController!.value.isInitialized)
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
-          ],
-        ),
-      ),
     );
   }
 }

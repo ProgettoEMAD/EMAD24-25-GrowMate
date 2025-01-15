@@ -85,11 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: kBrownLight,
       body: SingleChildScrollView(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery.of(context).size.height +
+              (MediaQuery.of(context).padding.vertical * 2),
           child: Column(
             children: [
               Expanded(
-                flex: 4,
+                flex: 3,
                 child: SvgPicture.asset(
                   'assets/illustration1.svg',
                   semanticsLabel: 'Illustrazione di una porta',
