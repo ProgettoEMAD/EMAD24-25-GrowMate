@@ -23,13 +23,22 @@ class InserimentoLotto extends StatelessWidget {
       }
 
       final coltura = colturaController.text;
-      final dataSemina = dataSeminaController.text;
-      final dataConsegna = dataConsegnaController.text;
+      final dataSeminaString = dataSeminaController.text;
+      final dataConsegnaString = dataConsegnaController.text;
       final piante = int.tryParse(pianteController.text) ?? 0;
       final vassoi = int.tryParse(vassoiController.text) ?? 0;
 
-      if (coltura.isEmpty || dataSemina.isEmpty || dataConsegna.isEmpty) {
+      if (coltura.isEmpty || dataSeminaString.isEmpty || dataConsegnaString.isEmpty) {
         print("Campi obbligatori mancanti.");
+        return;
+      }
+
+      // Conversione delle date
+      final dataSemina = DateTime.tryParse(dataSeminaString);
+      final dataConsegna = DateTime.tryParse(dataConsegnaString);
+
+      if (dataSemina == null || dataConsegna == null) {
+        print("Formato delle date non valido. Usa il formato YYYY-MM-DD.");
         return;
       }
 
@@ -51,8 +60,7 @@ class InserimentoLotto extends StatelessWidget {
           .get();
 
       if (vivaioQuery.docs.isEmpty) {
-        print(
-            "Nessun documento trovato nella collezione 'vivaio' con questo ID.");
+        print("Nessun documento trovato nella collezione 'vivaio' con questo ID.");
         return;
       }
 
@@ -98,8 +106,16 @@ class InserimentoLotto extends StatelessWidget {
         );
       }
     } catch (e) {
-      print(
-          "Errore durante il salvataggio del lotto o aggiornamento del vivaio: $e");
+      print("Errore durante il salvataggio del lotto o aggiornamento del vivaio: $e");
+    }
+  }
+
+  bool _isValidDate(String input) {
+    try {
+      DateTime.parse(input);
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -128,12 +144,36 @@ class InserimentoLotto extends StatelessWidget {
             const SizedBox(height: 16),
             TextField(
               controller: dataSeminaController,
+              readOnly: true,
               decoration: getInputDecoration('Data Semina (YYYY-MM-DD)'),
+              onTap: () async {
+                DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                );
+                if (pickedDate != null) {
+                  dataSeminaController.text = pickedDate.toIso8601String().split('T')[0];
+                }
+              },
             ),
             const SizedBox(height: 16),
             TextField(
               controller: dataConsegnaController,
+              readOnly: true,
               decoration: getInputDecoration('Data Consegna (YYYY-MM-DD)'),
+              onTap: () async {
+                DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                );
+                if (pickedDate != null) {
+                  dataConsegnaController.text = pickedDate.toIso8601String().split('T')[0];
+                }
+              },
             ),
             const SizedBox(height: 16),
             TextField(

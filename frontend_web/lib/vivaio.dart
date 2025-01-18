@@ -109,7 +109,8 @@ class _VivaioScreenState extends State<VivaioScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.green.withValues(alpha: 0.1),
+        backgroundColor: Colors.green,
+        //backgroundColor: Colors.green.withValues(alpha: 0.1),
         leading: SvgPicture.asset('assets/logo.svg'),
         centerTitle: false,
         title: const Text(
