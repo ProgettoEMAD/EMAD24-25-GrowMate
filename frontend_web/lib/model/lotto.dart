@@ -1,8 +1,8 @@
 class Lotto {
   String idLotto;
   String coltura;
-  String dataSemina;
-  String dataConsegna;
+  DateTime dataSemina;
+  DateTime dataConsegna;
   int piante;
   int vassoi;
   List<dynamic> scansioni;
@@ -25,10 +25,10 @@ class Lotto {
     return Lotto(
       idLotto: json['id_lotto'],
       coltura: json['coltura'] ?? 'Nessuna coltura assegnata',
-      dataSemina: json['data_semina'] ?? 'Nessuna data assegnata',
-      dataConsegna: json['data_consegna'] ?? 'Nessuna data assegnata',
-      piante: json['piante'] ?? 'Nessuna pianta assegnata',
-      vassoi: json['vassoi'] ?? 'Nessun vassoio assegnato',
+      dataSemina: DateTime.fromMillisecondsSinceEpoch(json['data_semina']), 
+      dataConsegna: DateTime.fromMillisecondsSinceEpoch(json['data_consegna']), 
+      piante: json['piante'] ?? 0,
+      vassoi: json['vassoi'] ?? 0,
       scansioni: json['scansioni'] ?? [],
       fallanza: json['fallanza'] ?? 0,
       consegnato: json['consegnato'] ?? false,
@@ -39,8 +39,8 @@ class Lotto {
     return {
       'id_lotto': idLotto,
       'coltura': coltura,
-      'data_semina': dataSemina,
-      'data_consegna': dataConsegna,
+      'data_semina': dataSemina.millisecondsSinceEpoch, 
+      'data_consegna': dataConsegna.millisecondsSinceEpoch, 
       'piante': piante,
       'vassoi': vassoi,
       'scansioni': scansioni,

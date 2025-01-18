@@ -1,46 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:growmate/Screen/Appoggio.dart';
-import 'package:growmate/Screen/Login.dart';
-import 'package:growmate/Screen/home.dart';
+import 'package:growmate/screen/login_page.dart';
+import 'package:growmate/screen/home_page.dart';
 import 'package:growmate/auth.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options.dart';
 
-
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
-  runApp(MyApp());
+  );
+  runApp(GrowMate());
 }
 
-class MyApp extends StatefulWidget {
-   const MyApp({super.key});
+class GrowMate extends StatelessWidget {
+  const GrowMate({super.key});
 
-
-   @override
-   State<MyApp> createState() => _MyAppState();
-
-}
-
-class _MyAppState extends State<MyApp>{
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Growmate',
       theme: ThemeData(),
       home: StreamBuilder(
         stream: Auth().authStateChanges,
-        builder: (context, snapshot){
-          if(snapshot.hasData){
-            return Home();
-          }
-          else{
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return const Home();
+          } else {
             return const LoginScreen();
           }
         },
-        ),
-        );
+      ),
+    );
   }
 }

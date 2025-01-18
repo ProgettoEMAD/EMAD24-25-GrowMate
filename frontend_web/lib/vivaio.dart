@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:growmate_web/inserimentodip.dart';
 import 'package:growmate_web/inserimentolotto.dart';
 import 'package:growmate_web/model/lotto.dart';
 
@@ -109,7 +110,8 @@ class _VivaioScreenState extends State<VivaioScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.green.withValues(alpha: 0.1),
+        backgroundColor: Colors.green,
+        //backgroundColor: Colors.green.withValues(alpha: 0.1),
         leading: SvgPicture.asset('assets/logo.svg'),
         centerTitle: false,
         title: const Text(
@@ -122,7 +124,12 @@ class _VivaioScreenState extends State<VivaioScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              // Azione per il profilo utente
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>  Inserimentodip(),
+                ),
+              );
             },
             icon: const Icon(Icons.person),
           ),
