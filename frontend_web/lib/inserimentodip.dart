@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:growmate_web/registradip';
+
 import 'package:intl/intl.dart';
 
 class Inserimentodip extends StatefulWidget {
@@ -22,9 +24,12 @@ class _VivaioScreenState extends State<Inserimentodip> {
   String indirizzoVivaio = "";
   DateTime dataScadenzaVivaio = DateTime.now();
   bool isLoading = true;
+  List<Map<String, String>> dipendenti = []; // Lista per i dati dei dipendenti
 
   Future<void> _fetchVivaioData() async {
     try {
+      print("Inizio recupero dati del vivaio...");
+
       final User? user = _auth.currentUser;
 
       if (user == null) {
@@ -35,6 +40,8 @@ class _VivaioScreenState extends State<Inserimentodip> {
         return;
       }
 
+      print("Utente autenticato con UID: ${user.uid}");
+
       // Recupera l'ID del vivaio associato all'utente
       final userDoc = await _firestore
           .collection('Utenti')
@@ -42,15 +49,14 @@ class _VivaioScreenState extends State<Inserimentodip> {
           .get();
 
       if (userDoc.docs.isEmpty) {
-        print(
-            "Nessun documento trovato nella collezione 'Utenti' per l'UID fornito.");
+        print("Nessun documento trovato nella collezione 'Utenti' per l'UID fornito.");
         setState(() {
           isLoading = false;
         });
         return;
       }
 
-      vivaioId = userDoc.docs.first['vivaio'];
+      vivaioId = userDoc.docs.first['vivaio'] ?? "";
       print("Vivaio trovato: $vivaioId");
 
       // Recupera i dettagli del vivaio
@@ -68,11 +74,32 @@ class _VivaioScreenState extends State<Inserimentodip> {
       }
 
       final vivaioData = vivaioDoc.docs.first.data();
+      nomeVivaio = vivaioData['nome'] ?? "";
+      indirizzoVivaio = vivaioData['indirizzo'] ?? "";
+      dataScadenzaVivaio = DateTime.fromMillisecondsSinceEpoch(
+          vivaioData['scadenza'] ?? 0);
+
+      print("Dati del vivaio recuperati: Nome - $nomeVivaio, Indirizzo - $indirizzoVivaio, Scadenza - ${DateFormat('dd/MM/yyyy').format(dataScadenzaVivaio)}");
+
+      // Recupera la lista dei dipendenti
+      final dipendentiDocs = await _firestore
+          .collection('Utenti')
+          .where('vivaio', isEqualTo: vivaioId)
+          .get();
+
+      print("Dipendenti trovati: ${dipendentiDocs.docs.length}");
+
+      dipendenti = dipendentiDocs.docs.map((doc) {
+        final data = doc.data();
+        print("Dipendente: ${data}");
+        return {
+          'cognome': (data['cognome'] ?? 'Cognome mancante').toString(),
+          'nome': (data['nome'] ?? 'Nome mancante').toString(),
+          'mail': (data['mail'] ?? 'Email mancante').toString(),
+        };
+      }).toList();
+
       setState(() {
-        nomeVivaio = vivaioData['nome'] ?? "";
-        indirizzoVivaio = vivaioData['indirizzo'] ?? "";
-        dataScadenzaVivaio =
-            DateTime.fromMillisecondsSinceEpoch(vivaioData['scadenza'] ?? 0);
         isLoading = false;
       });
     } catch (e) {
@@ -104,7 +131,6 @@ class _VivaioScreenState extends State<Inserimentodip> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -118,17 +144,42 @@ class _VivaioScreenState extends State<Inserimentodip> {
                     Image.asset('assets/vivaio.svg'),
                     Text('Nome del Vivaio: $nomeVivaio'),
                     Text('Indirizzo: $indirizzoVivaio'),
-                    Text('Data di Scadenza: ${DateFormat('dd mm yyyy').format(dataScadenzaVivaio)}'),
+                    Text(
+                        'Data di Scadenza: ${DateFormat('dd/MM/yyyy').format(dataScadenzaVivaio)}'),
+                    const SizedBox(height: 16),
                     // Elenco Dipendenti
-                    Text('Dipendenti:'),
-                    // ... (codice per visualizzare l'elenco dei dipendenti)
-
+                    Text(
+                      'Dipendenti:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: dipendenti.length,
+                      itemBuilder: (context, index) {
+                        final dipendente = dipendenti[index];
+                        return ListTile(
+                          title: Text(
+                            '${dipendente['cognome']} ${dipendente['nome']}',
+                          ),
+                          subtitle: Text('Email: ${dipendente['mail']}'),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
                     // Bottone per aggiungere dipendente
                     ElevatedButton(
                       onPressed: () {
-                        // Implementa la logica per aggiungere un nuovo dipendente
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => RegistraDipendente(),
+                          ),
+                        );
                       },
-                      child: Text('Aggiungi Dipendente'),
+                      child: const Text('Aggiungi Dipendente'),
                     ),
                   ],
                 ),
