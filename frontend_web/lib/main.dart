@@ -53,7 +53,7 @@ class App extends StatelessWidget {
                 SizedBox(
                   width: MediaQuery.of(context).size.height * 0.1,
                   height: MediaQuery.of(context).size.height * 0.1,
-                  child: SvgPicture.asset('assets/logo.svg'),
+                  child: SvgPicture.asset('assets/icon1.svg'),
                 ),
                 const VerticalDivider(
                   color: Colors.grey,

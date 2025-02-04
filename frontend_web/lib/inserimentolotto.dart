@@ -18,7 +18,6 @@ class InserimentoLotto extends StatelessWidget {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
-        print("Utente non autenticato.");
         return;
       }
 
@@ -29,16 +28,13 @@ class InserimentoLotto extends StatelessWidget {
       final vassoi = int.tryParse(vassoiController.text) ?? 0;
 
       if (coltura.isEmpty || dataSeminaString.isEmpty || dataConsegnaString.isEmpty) {
-        print("Campi obbligatori mancanti.");
         return;
       }
 
-      // Conversione delle date
       final dataSemina = DateTime.tryParse(dataSeminaString);
       final dataConsegna = DateTime.tryParse(dataConsegnaString);
 
       if (dataSemina == null || dataConsegna == null) {
-        print("Formato delle date non valido. Usa il formato YYYY-MM-DD.");
         return;
       }
 
@@ -48,7 +44,6 @@ class InserimentoLotto extends StatelessWidget {
           .get();
 
       if (userQuery.docs.isEmpty) {
-        print("Nessun vivaio associato trovato per l'utente.");
         return;
       }
 
@@ -60,17 +55,13 @@ class InserimentoLotto extends StatelessWidget {
           .get();
 
       if (vivaioQuery.docs.isEmpty) {
-        print("Nessun documento trovato nella collezione 'vivaio' con questo ID.");
         return;
       }
 
       final vivaioDoc = vivaioQuery.docs.first;
-      final vivaioRef =
-          FirebaseFirestore.instance.collection('vivaio').doc(vivaioDoc.id);
+      final vivaioRef = FirebaseFirestore.instance.collection('vivaio').doc(vivaioDoc.id);
 
-      final counterRef = FirebaseFirestore.instance
-          .collection('Counters')
-          .doc('lotto_counter');
+      final counterRef = FirebaseFirestore.instance.collection('Counters').doc('lotto_counter');
       final counterSnapshot = await counterRef.get();
 
       int nextId = 1;
@@ -80,58 +71,37 @@ class InserimentoLotto extends StatelessWidget {
 
       await counterRef.set({'current': nextId});
 
-      await FirebaseFirestore.instance
-          .collection('Lotto')
-          .doc(nextId.toString())
-          .set(Lotto(
-            idLotto: nextId,
-            coltura: coltura,
-            dataSemina: dataSemina,
-            dataConsegna: dataConsegna,
-            piante: piante,
-            vassoi: vassoi,
-          ).toJson());
-
-      print("Lotto salvato con successo con ID: ${nextId.toString()}");
+      await FirebaseFirestore.instance.collection('Lotto').doc(nextId.toString()).set(
+        Lotto(
+          idLotto: nextId,
+          coltura: coltura,
+          dataSemina: dataSemina,
+          dataConsegna: dataConsegna,
+          piante: piante,
+          vassoi: vassoi,
+        ).toJson(),
+      );
 
       await vivaioRef.update({
-        'lotti': FieldValue.arrayUnion([nextId.toString()]),
+        'lotti': FieldValue.arrayUnion([nextId]),
       });
 
-      print("L'array 'lotti' del vivaio è stato aggiornato con successo.");
       if (context.mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => VivaioScreen()),
         );
       }
-    } catch (e) {
-      print("Errore durante il salvataggio del lotto o aggiornamento del vivaio: $e");
-    }
+    } catch (e) {}
   }
-
-  bool _isValidDate(String input) {
-    try {
-      DateTime.parse(input);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  getInputDecoration(String label) => InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        labelText: label,
-      );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFFEFADF),
       appBar: AppBar(
-        title: const Text('Inserimento Lotto'),
+        title: const Text('Inserimento Lotto', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color(0xFF5F6C37),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -139,13 +109,13 @@ class InserimentoLotto extends StatelessWidget {
           children: [
             TextField(
               controller: colturaController,
-              decoration: getInputDecoration('Coltura'),
+              decoration: InputDecoration(labelText: 'Coltura'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: dataSeminaController,
               readOnly: true,
-              decoration: getInputDecoration('Data Semina (YYYY-MM-DD)'),
+              decoration: InputDecoration(labelText: 'Data Semina (YYYY-MM-DD)'),
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
                   context: context,
@@ -154,7 +124,7 @@ class InserimentoLotto extends StatelessWidget {
                   lastDate: DateTime(2100),
                 );
                 if (pickedDate != null) {
-                  dataSeminaController.text = pickedDate.toIso8601String().split('T')[0];
+                  dataSeminaController.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                 }
               },
             ),
@@ -162,7 +132,7 @@ class InserimentoLotto extends StatelessWidget {
             TextField(
               controller: dataConsegnaController,
               readOnly: true,
-              decoration: getInputDecoration('Data Consegna (YYYY-MM-DD)'),
+              decoration: InputDecoration(labelText: 'Data Consegna (YYYY-MM-DD)'),
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
                   context: context,
@@ -171,7 +141,7 @@ class InserimentoLotto extends StatelessWidget {
                   lastDate: DateTime(2100),
                 );
                 if (pickedDate != null) {
-                  dataConsegnaController.text = pickedDate.toIso8601String().split('T')[0];
+                  dataConsegnaController.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                 }
               },
             ),
@@ -179,18 +149,18 @@ class InserimentoLotto extends StatelessWidget {
             TextField(
               controller: pianteController,
               keyboardType: TextInputType.number,
-              decoration: getInputDecoration('Numero di Piante'),
+              decoration: InputDecoration(labelText: 'Numero di Piante'),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: vassoiController,
               keyboardType: TextInputType.number,
-              decoration: getInputDecoration('Numero di Vassoi'),
+              decoration: InputDecoration(labelText: 'Numero di Vassoi'),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: Color(0xFF5F6C37),
                 foregroundColor: Colors.white,
               ),
               onPressed: () => _salvaLotto(context),

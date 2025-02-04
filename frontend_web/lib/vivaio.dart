@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:growmate_web/inserimentodip.dart';
 import 'package:growmate_web/inserimentolotto.dart';
 import 'package:growmate_web/model/lotto.dart';
+import 'package:growmate_web/main.dart';
 
 class VivaioScreen extends StatefulWidget {
   static const String routeName = "vivaio";
@@ -92,7 +93,7 @@ class _VivaioScreenState extends State<VivaioScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Color(0xFF5F6C37),
-        leading: SvgPicture.asset('assets/logo.svg'),
+        leading: SvgPicture.asset('assets/icon1.svg'),
         centerTitle: false,
         title: const Text(
           "Benvenuto nel tuo vivaio",
@@ -169,18 +170,35 @@ class _VivaioScreenState extends State<VivaioScreen> {
                 ),
               ],
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Color(0xFF5F6C37),
-        foregroundColor: Colors.white,
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => InserimentoLotto(),
-            ),
-          );
-        },
-        icon: const Icon(Icons.add),
-        label: const Text("Aggiungi lotto"),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          FloatingActionButton.extended(
+            backgroundColor: Color(0xFF5F6C37),
+            foregroundColor: Colors.white,
+            onPressed: () {
+                    Navigator.of(context).pushNamed(App.routeName);
+                  },
+            icon: const Icon(Icons.logout),
+            label: const Text("Logout"),
+          ),
+          FloatingActionButton.extended(
+            backgroundColor: Color(0xFF5F6C37),
+            foregroundColor: Colors.white,
+            onPressed: () {
+              Navigator.of(context)
+                  .push(
+                    MaterialPageRoute(
+                      builder: (_) => InserimentoLotto(),
+                    ),
+                  )
+                  .then((_) => _fetchUserLotti());
+            },
+            icon: const Icon(Icons.add),
+            label: const Text("Aggiungi lotto"),
+          ),
+        ],
       ),
     );
   }
