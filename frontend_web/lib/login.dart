@@ -29,11 +29,9 @@ class _LoginState extends State<Login> {
           password: passwordController.text,
         );
 
-        // Salva l'UID dell'utente in SharedPreferences
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('uid', userCredential.user!.uid);
 
-        // Naviga alla pagina Vivaio
         Navigator.of(context).pushReplacementNamed(VivaioScreen.routeName);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -43,6 +41,7 @@ class _LoginState extends State<Login> {
     }
 
     return Scaffold(
+      backgroundColor: Color(0xFFFEFADF), // Colore di sfondo
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -126,11 +125,11 @@ class _LoginState extends State<Login> {
                           icon: _obscureText
                               ? Icon(
                                   Icons.visibility,
-                                  color: Colors.green,
+                                  color: Color(0xFF5F6C37),
                                 )
                               : Icon(
                                   Icons.visibility_off,
-                                  color: Colors.green,
+                                  color: Color(0xFF5F6C37),
                                 ),
                         ),
                         border: OutlineInputBorder(
@@ -142,7 +141,7 @@ class _LoginState extends State<Login> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Color(0xFF5F6C37), // Colore del bottone
                       foregroundColor: Colors.white,
                     ),
                     onPressed: () {

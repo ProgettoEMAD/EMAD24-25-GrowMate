@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Importa FirebaseAuth
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:growmate_web/register.dart';
 import 'firebase_options.dart';
 import 'package:growmate_web/login.dart';
@@ -43,6 +43,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFFEFADF), // Imposta il colore di sfondo
       body: Column(
         children: [
           SizedBox(
@@ -81,7 +82,7 @@ class App extends StatelessWidget {
                     Navigator.of(context).pushNamed(Login.routeName);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color(0xFF5F6C37), // Colore dei bottoni
                     foregroundColor: Colors.white,
                   ),
                   child: Text(
@@ -105,13 +106,13 @@ class App extends StatelessWidget {
                       .displayMedium
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                Padding(padding: EdgeInsets.only(top: 16)),
+                const Padding(padding: EdgeInsets.only(top: 16)),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed(Login.routeName);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color(0xFF5F6C37), // Colore dei bottoni
                     foregroundColor: Colors.white,
                   ),
                   child: Text(

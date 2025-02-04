@@ -1,5 +1,5 @@
 class Lotto {
-  String idLotto;
+  int idLotto;
   String coltura;
   DateTime dataSemina;
   DateTime dataConsegna;

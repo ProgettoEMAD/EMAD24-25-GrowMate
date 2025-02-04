@@ -84,7 +84,7 @@ class InserimentoLotto extends StatelessWidget {
           .collection('Lotto')
           .doc(nextId.toString())
           .set(Lotto(
-            idLotto: nextId.toString(),
+            idLotto: nextId,
             coltura: coltura,
             dataSemina: dataSemina,
             dataConsegna: dataConsegna,
