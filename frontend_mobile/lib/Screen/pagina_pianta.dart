@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:growmate/common/colors.dart';
 import 'package:growmate/common/const.dart';
+import 'package:growmate/service/api_wrapper.dart';
 
 class LottoDetailPage extends StatefulWidget {
   final Map<String, dynamic> lotto;
@@ -19,6 +20,7 @@ class LottoDetailPage extends StatefulWidget {
 
 class _LottoDetailPageState extends State<LottoDetailPage> {
   List<File> images = [];
+  List<int> results = [];
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +168,7 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    "Analisi delle ${images.length} scansioni effettuate",
+                    "Hai effettuato ${images.length} foto, pronte per la scansione.",
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -185,15 +187,95 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                     itemBuilder: (context, index) {
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          images[index],
+                        child: Stack(
+                          children: [
+                            Image.file(
+                              images[index],
+                              width: 200,
+                              fit: BoxFit.fitWidth,
+                            ),
+                            if (results.isNotEmpty) ...[
+                              Positioned(
+                                bottom: 0,
+                                child: Container(
+                                  height: 40,
+                                  width: 200,
+                                  decoration: BoxDecoration(
+                                    color: kGreenDark.withAlpha(150),
+                                    borderRadius: const BorderRadius.vertical(
+                                      bottom: Radius.circular(12),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      results[index].toString(),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       );
                     },
                     separatorBuilder: (context, index) => SizedBox(width: 8),
                   ),
                 ),
-              ]
+              ],
+              if (images.isNotEmpty && results.isEmpty) ...[
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        var wrapper = ApiWrapper();
+                        int i = 0;
+                        results = List.filled(images.length, 0);
+                        for (File image in images) {
+                          Map<String, dynamic> result = await wrapper.analyze(
+                            image,
+                            widget.lotto['id_lotto'] as int,
+                          );
+
+                          results[i] = result['result'] as int;
+                          i++;
+                        }
+
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kBrown,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16.0,
+                          horizontal: 24.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text(
+                        "Invia per la scansione",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16),
+              ),
               /*if (_image != null)
                 Center(
                   child: Column(

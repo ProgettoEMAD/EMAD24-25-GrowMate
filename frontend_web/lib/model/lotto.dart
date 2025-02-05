@@ -23,7 +23,7 @@ class Lotto {
 
   factory Lotto.fromJson(Map<String, dynamic> json) {
     return Lotto(
-      idLotto: json['id_lotto'],
+      idLotto: int.parse(json['id_lotto']),
       coltura: json['coltura'] ?? 'Nessuna coltura assegnata',
       dataSemina: DateTime.fromMillisecondsSinceEpoch(json['data_semina']), 
       dataConsegna: DateTime.fromMillisecondsSinceEpoch(json['data_consegna']), 

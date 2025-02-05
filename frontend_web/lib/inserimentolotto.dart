@@ -27,7 +27,9 @@ class InserimentoLotto extends StatelessWidget {
       final piante = int.tryParse(pianteController.text) ?? 0;
       final vassoi = int.tryParse(vassoiController.text) ?? 0;
 
-      if (coltura.isEmpty || dataSeminaString.isEmpty || dataConsegnaString.isEmpty) {
+      if (coltura.isEmpty ||
+          dataSeminaString.isEmpty ||
+          dataConsegnaString.isEmpty) {
         return;
       }
 
@@ -59,9 +61,12 @@ class InserimentoLotto extends StatelessWidget {
       }
 
       final vivaioDoc = vivaioQuery.docs.first;
-      final vivaioRef = FirebaseFirestore.instance.collection('vivaio').doc(vivaioDoc.id);
+      final vivaioRef =
+          FirebaseFirestore.instance.collection('vivaio').doc(vivaioDoc.id);
 
-      final counterRef = FirebaseFirestore.instance.collection('Counters').doc('lotto_counter');
+      final counterRef = FirebaseFirestore.instance
+          .collection('Counters')
+          .doc('lotto_counter');
       final counterSnapshot = await counterRef.get();
 
       int nextId = 1;
@@ -71,16 +76,19 @@ class InserimentoLotto extends StatelessWidget {
 
       await counterRef.set({'current': nextId});
 
-      await FirebaseFirestore.instance.collection('Lotto').doc(nextId.toString()).set(
-        Lotto(
-          idLotto: nextId,
-          coltura: coltura,
-          dataSemina: dataSemina,
-          dataConsegna: dataConsegna,
-          piante: piante,
-          vassoi: vassoi,
-        ).toJson(),
-      );
+      await FirebaseFirestore.instance
+          .collection('Lotto')
+          .doc(nextId.toString())
+          .set(Lotto(
+            idLotto: nextId,
+            coltura: coltura,
+            dataSemina: dataSemina,
+            dataConsegna: dataConsegna,
+            piante: piante,
+            vassoi: vassoi,
+          ).toJson());
+
+      print("Lotto salvato con successo con ID: ${nextId.toString()}");
 
       await vivaioRef.update({
         'lotti': FieldValue.arrayUnion([nextId]),
@@ -100,7 +108,8 @@ class InserimentoLotto extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFFEFADF),
       appBar: AppBar(
-        title: const Text('Inserimento Lotto', style: TextStyle(color: Colors.white)),
+        title: const Text('Inserimento Lotto',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xFF5F6C37),
       ),
       body: Padding(
@@ -115,7 +124,8 @@ class InserimentoLotto extends StatelessWidget {
             TextField(
               controller: dataSeminaController,
               readOnly: true,
-              decoration: InputDecoration(labelText: 'Data Semina (YYYY-MM-DD)'),
+              decoration:
+                  InputDecoration(labelText: 'Data Semina (YYYY-MM-DD)'),
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
                   context: context,
@@ -124,7 +134,8 @@ class InserimentoLotto extends StatelessWidget {
                   lastDate: DateTime(2100),
                 );
                 if (pickedDate != null) {
-                  dataSeminaController.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                  dataSeminaController.text =
+                      "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                 }
               },
             ),
@@ -132,7 +143,8 @@ class InserimentoLotto extends StatelessWidget {
             TextField(
               controller: dataConsegnaController,
               readOnly: true,
-              decoration: InputDecoration(labelText: 'Data Consegna (YYYY-MM-DD)'),
+              decoration:
+                  InputDecoration(labelText: 'Data Consegna (YYYY-MM-DD)'),
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
                   context: context,
@@ -141,7 +153,8 @@ class InserimentoLotto extends StatelessWidget {
                   lastDate: DateTime(2100),
                 );
                 if (pickedDate != null) {
-                  dataConsegnaController.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                  dataConsegnaController.text =
+                      "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                 }
               },
             ),

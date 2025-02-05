@@ -277,7 +277,7 @@ class _HomeState extends State<Home> {
                     for (var lotto in lotti)
                       ScanCard(
                         plantName: lotto['coltura'] ?? 'N/A',
-                        lotNumber: lotto['id_lotto'] ?? 'N/A',
+                        lotNumber: lotto['id_lotto'].toString() ?? 'N/A',
                         sowingDate: DateTime.fromMillisecondsSinceEpoch(
                           (lotto['data_semina'] as int),
                         ),
