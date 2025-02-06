@@ -23,10 +23,10 @@ class Lotto {
 
   factory Lotto.fromJson(Map<String, dynamic> json) {
     return Lotto(
-      idLotto: int.parse(json['id_lotto']),
+      idLotto: json['id_lotto'],
       coltura: json['coltura'] ?? 'Nessuna coltura assegnata',
-      dataSemina: DateTime.fromMillisecondsSinceEpoch(json['data_semina']), 
-      dataConsegna: DateTime.fromMillisecondsSinceEpoch(json['data_consegna']), 
+      dataSemina: DateTime.fromMillisecondsSinceEpoch(json['data_semina']),
+      dataConsegna: DateTime.fromMillisecondsSinceEpoch(json['data_consegna']),
       piante: json['piante'] ?? 0,
       vassoi: json['vassoi'] ?? 0,
       scansioni: json['scansioni'] ?? [],
@@ -39,8 +39,8 @@ class Lotto {
     return {
       'id_lotto': idLotto,
       'coltura': coltura,
-      'data_semina': dataSemina.millisecondsSinceEpoch, 
-      'data_consegna': dataConsegna.millisecondsSinceEpoch, 
+      'data_semina': dataSemina.millisecondsSinceEpoch,
+      'data_consegna': dataConsegna.millisecondsSinceEpoch,
       'piante': piante,
       'vassoi': vassoi,
       'scansioni': scansioni,

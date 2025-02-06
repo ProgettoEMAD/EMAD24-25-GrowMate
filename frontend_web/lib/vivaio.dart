@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:growmate_web/common/colors.dart';
 import 'package:growmate_web/inserimentodip.dart';
 import 'package:growmate_web/inserimentolotto.dart';
 import 'package:growmate_web/model/lotto.dart';
@@ -65,12 +66,16 @@ class _VivaioScreenState extends State<VivaioScreen> {
           .collection('Lotto')
           .where('id_lotto', whereIn: lottiIds)
           .get();
-
-      setState(() {
+      try {
+        lottiSnapshot.docs.map((doc) => doc.data());
         lotti = lottiSnapshot.docs
             .map((doc) => doc.data())
             .map((l) => Lotto.fromJson(l))
             .toList();
+      } catch (e) {
+        print(e);
+      }
+      setState(() {
         isLoading = false;
       });
     } catch (e) {
@@ -92,7 +97,7 @@ class _VivaioScreenState extends State<VivaioScreen> {
       backgroundColor: Color(0xFFFEFADF),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xFF5F6C37),
+        backgroundColor: kGreenDark,
         leading: SvgPicture.asset('assets/icon1.svg'),
         centerTitle: false,
         title: const Text(
@@ -115,6 +120,12 @@ class _VivaioScreenState extends State<VivaioScreen> {
             },
             icon: const Icon(Icons.person, color: Colors.white),
           ),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(App.routeName);
+            },
+            icon: const Icon(Icons.logout, color: Colors.white),
+          ),
         ],
       ),
       body: isLoading
@@ -125,7 +136,7 @@ class _VivaioScreenState extends State<VivaioScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.only(top: 16.0, left: 16, right: 16),
                   child: Text(
                     "Ecco i tuoi lotti:",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -151,7 +162,8 @@ class _VivaioScreenState extends State<VivaioScreen> {
                                   color: Theme.of(context).dividerColor,
                                 ),
                               ),
-                              leading: const Icon(Icons.grass, color: Color(0xFF5F6C37)),
+                              leading: const Icon(Icons.grass,
+                                  color: Color(0xFF5F6C37)),
                               title: Text(
                                 lotto.coltura,
                                 style: const TextStyle(fontSize: 16),
@@ -170,35 +182,20 @@ class _VivaioScreenState extends State<VivaioScreen> {
                 ),
               ],
             ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          FloatingActionButton.extended(
-            backgroundColor: Color(0xFF5F6C37),
-            foregroundColor: Colors.white,
-            onPressed: () {
-                    Navigator.of(context).pushNamed(App.routeName);
-                  },
-            icon: const Icon(Icons.logout),
-            label: const Text("Logout"),
-          ),
-          FloatingActionButton.extended(
-            backgroundColor: Color(0xFF5F6C37),
-            foregroundColor: Colors.white,
-            onPressed: () {
-              Navigator.of(context)
-                  .push(
-                    MaterialPageRoute(
-                      builder: (_) => InserimentoLotto(),
-                    ),
-                  )
-                  .then((_) => _fetchUserLotti());
-            },
-            icon: const Icon(Icons.add),
-            label: const Text("Aggiungi lotto"),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: kBrownAccent,
+        foregroundColor: Colors.white,
+        onPressed: () {
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (_) => InserimentoLotto(),
+                ),
+              )
+              .then((_) => _fetchUserLotti());
+        },
+        icon: const Icon(Icons.add),
+        label: const Text("Aggiungi lotto"),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:growmate_web/common/colors.dart';
 import 'package:growmate_web/vivaio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +42,7 @@ class _LoginState extends State<Login> {
     }
 
     return Scaffold(
-      backgroundColor: Color(0xFFFEFADF), // Colore di sfondo
+      backgroundColor: kBrownLight,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -63,23 +64,6 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.height * 0.1,
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  child: SvgPicture.asset('assets/icon1.svg'),
-                ),
-                const VerticalDivider(
-                  color: Colors.grey,
-                  thickness: 1,
-                ),
-                Text(
-                  "Accesso",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const Spacer(),
               ],
             ),
           ),
@@ -88,21 +72,38 @@ class _LoginState extends State<Login> {
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: SvgPicture.asset(
+                        "illustration5.svg",
+                      ),
+                    ),
+                  ),
                   Text(
                     "Accesso",
-                    style: Theme.of(context)
-                        .textTheme
-                        .displayMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: kGreenDark,
+                        ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: TextField(
                       controller: emailController,
                       decoration: InputDecoration(
+                        labelStyle: TextStyle(color: kGreenDark),
                         contentPadding: EdgeInsets.symmetric(horizontal: 16),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: kGreenDark),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                            color: kGreenDark,
+                            width: 2,
+                          ),
                         ),
                         labelText: 'Email',
                       ),
@@ -132,8 +133,17 @@ class _LoginState extends State<Login> {
                                   color: Color(0xFF5F6C37),
                                 ),
                         ),
+                        labelStyle: TextStyle(color: kGreenDark),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: kGreenDark),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                            color: kGreenDark,
+                            width: 2,
+                          ),
                         ),
                         labelText: 'Password',
                       ),
@@ -141,7 +151,7 @@ class _LoginState extends State<Login> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF5F6C37), // Colore del bottone
+                      backgroundColor: kBrownAccent,
                       foregroundColor: Colors.white,
                     ),
                     onPressed: () {
@@ -162,9 +172,14 @@ class _LoginState extends State<Login> {
                       child: Text(
                         'Login',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold, color: Colors.white),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                       ),
                     ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
                   ),
                 ],
               ),
