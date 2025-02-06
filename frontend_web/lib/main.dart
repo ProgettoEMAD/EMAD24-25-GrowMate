@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:growmate_web/common/colors.dart';
 import 'package:growmate_web/register.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:rive/rive.dart';
 import 'firebase_options.dart';
@@ -14,6 +15,8 @@ import 'package:growmate_web/vivaio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

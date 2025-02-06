@@ -122,7 +122,8 @@ class _VivaioScreenState extends State<VivaioScreen> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(App.routeName);
+              _auth.signOut().then((_) =>
+                  Navigator.of(context).pushReplacementNamed(App.routeName));
             },
             icon: const Icon(Icons.logout, color: Colors.white),
           ),

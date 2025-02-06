@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:growmate_web/common/colors.dart';
 
 class RegistraDipendente extends StatelessWidget {
   RegistraDipendente({super.key});
@@ -19,7 +20,10 @@ class RegistraDipendente extends StatelessWidget {
       final password = passwordController.text.trim();
 
       // Controllo se i campi sono vuoti
-      if (nome.isEmpty || cognome.isEmpty || email.isEmpty || password.isEmpty) {
+      if (nome.isEmpty ||
+          cognome.isEmpty ||
+          email.isEmpty ||
+          password.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Tutti i campi sono obbligatori.")),
         );
@@ -43,7 +47,8 @@ class RegistraDipendente extends StatelessWidget {
 
       if (userQuery.docs.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Nessun vivaio associato trovato per l'utente.")),
+          const SnackBar(
+              content: Text("Nessun vivaio associato trovato per l'utente.")),
         );
         return;
       }
@@ -60,7 +65,8 @@ class RegistraDipendente extends StatelessWidget {
       final dipendente = userCredential.user;
       if (dipendente == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Errore nella creazione dell'utente dipendente.")),
+          const SnackBar(
+              content: Text("Errore nella creazione dell'utente dipendente.")),
         );
         return;
       }
@@ -91,9 +97,18 @@ class RegistraDipendente extends StatelessWidget {
 
   InputDecoration _getInputDecoration(String label) {
     return InputDecoration(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      labelStyle: TextStyle(color: kGreenDark),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: kGreenDark),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(
+          color: kGreenDark,
+          width: 2,
+        ),
       ),
       labelText: label,
     );
@@ -102,7 +117,10 @@ class RegistraDipendente extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kBrownLight,
       appBar: AppBar(
+        backgroundColor: kGreenDark,
+        foregroundColor: Colors.white,
         title: const Text('Registra Dipendente'),
       ),
       body: SingleChildScrollView(
@@ -131,13 +149,22 @@ class RegistraDipendente extends StatelessWidget {
               decoration: _getInputDecoration('Password'),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: MaterialButton(
+                color: kGreenDark,
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                onPressed: () {
+                  _registraDipendente(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: const Text('Aggiungi nuovo dipendente'),
+                ),
               ),
-              onPressed: () => _registraDipendente(context),
-              child: const Text('Registra Dipendente'),
             ),
           ],
         ),
