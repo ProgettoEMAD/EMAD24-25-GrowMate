@@ -119,8 +119,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: kBrownLight,
       appBar: AppBar(
-        title: Text(
-          //vivaioData != null ? '${vivaioData!['nome']}' : 'Caricamento...',
+        title: const Text(
           "GrowMate",
         ),
         centerTitle: true,

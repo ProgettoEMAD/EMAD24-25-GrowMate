@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,6 +22,11 @@ class LottoDetailPage extends StatefulWidget {
 class _LottoDetailPageState extends State<LottoDetailPage> {
   List<File> images = [];
   List<int> results = [];
+
+  num? campionePiante;
+  num? percentuale;
+  num? sommaPianteVassoiScansionati;
+  num? numeroVassoiScansionati;
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +229,8 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                         ),
                       );
                     },
-                    separatorBuilder: (context, index) => SizedBox(width: 8),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 8),
                   ),
                 ),
               ],
@@ -249,6 +256,33 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                           i++;
                         }
 
+                        var piante = widget.lotto['piante'];
+                        var vassoi = widget.lotto['vassoi'];
+
+                        var piantePerVassoio = piante / vassoi;
+                        numeroVassoiScansionati = results.length;
+
+                        sommaPianteVassoiScansionati = results.fold<int>(
+                            0,
+                            (previousValue, element) =>
+                                previousValue + element);
+
+                        campionePiante =
+                            numeroVassoiScansionati! * piantePerVassoio;
+
+                        percentuale = (sommaPianteVassoiScansionati! * 100) /
+                            campionePiante!;
+
+                        var prospettivaPianteCresciuteTotale =
+                            (sommaPianteVassoiScansionati! * piante) /
+                                campionePiante!;
+
+                        var percentualeTotale =
+                            (prospettivaPianteCresciuteTotale * 100) / piante;
+                        print(
+                          "piante: $piante, vassoi $vassoi, piantePerVassoio: $piantePerVassoio, numeroVassoiScansionati: $numeroVassoiScansionati, sommaPianteVassoiScansionati: $sommaPianteVassoiScansionati, campionePiante: $campionePiante, percentuale: $percentuale, prospettivaPianteCresciuteTotale: $prospettivaPianteCresciuteTotale, percentualeTotale: $percentualeTotale",
+                        );
+
                         setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
@@ -273,9 +307,7 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                   ),
                 ),
               ],
-              const Padding(
-                padding: EdgeInsets.only(bottom: 16),
-              ),
+              if (percentuale != null && campionePiante != null) ...analysis
               /*if (_image != null)
                 Center(
                   child: Column(
@@ -335,6 +367,119 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
         ),
       ),
     );
+  }
+
+  List<Widget> get analysis {
+    var piantePerVassoio = widget.lotto['piante'] / widget.lotto['vassoi'];
+
+    return [
+      const Padding(
+        padding: EdgeInsets.all(16),
+        child: Text(
+          "Risultati analisi",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Percentuale di piante nate: ${percentuale!.toStringAsFixed(2)}%",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            Text(
+              "Vassoi scansionati: $numeroVassoiScansionati su ${widget.lotto['vassoi']}",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 15,
+                  height: 15,
+                  color: kGreen,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 4),
+                ),
+                const Text(
+                  "Piante nate",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 15,
+                  height: 15,
+                  color: kGreenDark,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 4),
+                ),
+                const Text(
+                  "Piante non nate",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+      AspectRatio(
+        aspectRatio: 1.5,
+        child: PieChart(
+          PieChartData(
+            pieTouchData: PieTouchData(
+              touchCallback: (FlTouchEvent event, pieTouchResponse) {},
+            ),
+            borderData: FlBorderData(
+              show: false,
+            ),
+            sectionsSpace: 0,
+            centerSpaceRadius: 40,
+            sections: [
+              PieChartSectionData(
+                color: kGreen,
+                value: sommaPianteVassoiScansionati!.toDouble(),
+                title: '$sommaPianteVassoiScansionati',
+                radius: 60,
+                titleStyle: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: kBrownAccent,
+                ),
+              ),
+              PieChartSectionData(
+                color: kGreenDark,
+                value: (widget.lotto['piante']! - sommaPianteVassoiScansionati)
+                    .toDouble(),
+                title:
+                    '${((piantePerVassoio * numeroVassoiScansionati!) - sommaPianteVassoiScansionati as double).toInt()}',
+                radius: 60,
+                titleStyle: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: kBrownAccent,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    ];
   }
 }
 
@@ -602,7 +747,7 @@ class _CameraViewState extends State<CameraView> {
                         borderRadius: BorderRadius.circular(12),
                         child: InkWell(
                           onTap: () => _takePicture(),
-                          child: Container(
+                          child: SizedBox(
                             width: MediaQuery.of(context).size.width,
                             child: Stack(
                               children: [
