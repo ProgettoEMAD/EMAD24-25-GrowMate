@@ -584,10 +584,33 @@ class _CameraViewState extends State<CameraView> {
                   SizedBox.expand(
                     child: CameraPreview(_cameraController!),
                   ),
+                  Positioned(
+                    top: 64,
+                    left: 16,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: kBrownLight,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(
+                              child: Icon(
+                            Icons.arrow_left,
+                            color: kGreenDark,
+                          )),
+                        ),
+                      ),
+                    ),
+                  ),
                   if (takenPictures.isNotEmpty) ...[
                     Positioned(
                       top: 64,
-                      left: 16,
+                      left: 64,
                       child: InkWell(
                         onTap: () {
                           showDialog(
