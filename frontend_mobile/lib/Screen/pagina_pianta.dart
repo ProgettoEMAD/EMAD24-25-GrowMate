@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -27,6 +28,17 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
   num? percentuale;
   num? sommaPianteVassoiScansionati;
   num? numeroVassoiScansionati;
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.lotto['scansioni']);
+    if (widget.lotto['scansioni'] != null) {
+      results = List<int>.from(widget.lotto['scansioni'] as List<dynamic>);
+
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +123,7 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    "Non ci sono ancora scansioni registrate",
+                    "Clicca sul tasto per iniziare una nuova scansione",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -279,6 +291,14 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
 
                         var percentualeTotale =
                             (prospettivaPianteCresciuteTotale * 100) / piante;
+
+                        await FirebaseFirestore.instance
+                            .collection('Lotto')
+                            .doc(widget.lotto['id_lotto'].toString())
+                            .update({
+                          'scansioni': results,
+                        });
+
                         print(
                           "piante: $piante, vassoi $vassoi, piantePerVassoio: $piantePerVassoio, numeroVassoiScansionati: $numeroVassoiScansionati, sommaPianteVassoiScansionati: $sommaPianteVassoiScansionati, campionePiante: $campionePiante, percentuale: $percentuale, prospettivaPianteCresciuteTotale: $prospettivaPianteCresciuteTotale, percentualeTotale: $percentualeTotale",
                         );
@@ -307,7 +327,8 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                   ),
                 ),
               ],
-              if (percentuale != null && campionePiante != null) ...analysis
+              if (percentuale != null && campionePiante != null) ...analysis,
+              if (percentuale == null && results.isNotEmpty) ...analysis
               /*if (_image != null)
                 Center(
                   child: Column(
@@ -370,8 +391,13 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
   }
 
   List<Widget> get analysis {
-    var piantePerVassoio = widget.lotto['piante'] / widget.lotto['vassoi'];
+    double? piantePerVassoio;
+    if (percentuale != null) {
+      piantePerVassoio = widget.lotto['piante'] / widget.lotto['vassoi'];
+    }
 
+    sommaPianteVassoiScansionati ??= results.fold<int>(
+        0, (previousValue, element) => previousValue + element);
     return [
       const Padding(
         padding: EdgeInsets.all(16),
@@ -380,64 +406,65 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Percentuale di piante nate: ${percentuale!.toStringAsFixed(2)}%",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+      if (piantePerVassoio != null)
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Percentuale di piante nate: ${percentuale!.toStringAsFixed(2)}%",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
-            ),
-            Text(
-              "Vassoi scansionati: $numeroVassoiScansionati su ${widget.lotto['vassoi']}",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+              Text(
+                "Vassoi scansionati: $numeroVassoiScansionati su ${widget.lotto['vassoi']}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 15,
-                  height: 15,
-                  color: kGreen,
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 4),
-                ),
-                const Text(
-                  "Piante nate",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Container(
+                    width: 15,
+                    height: 15,
+                    color: kGreen,
                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 15,
-                  height: 15,
-                  color: kGreenDark,
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 4),
-                ),
-                const Text(
-                  "Piante non nate",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4),
                   ),
-                ),
-              ],
-            )
-          ],
+                  const Text(
+                    "Piante nate",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 15,
+                    height: 15,
+                    color: kGreenDark,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4),
+                  ),
+                  const Text(
+                    "Piante non nate",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
-      ),
       AspectRatio(
         aspectRatio: 1.5,
         child: PieChart(
@@ -466,8 +493,10 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                 color: kGreenDark,
                 value: (widget.lotto['piante']! - sommaPianteVassoiScansionati)
                     .toDouble(),
-                title:
-                    '${((piantePerVassoio * numeroVassoiScansionati!) - sommaPianteVassoiScansionati as double).toInt()}',
+                title: piantePerVassoio == null
+                    ? ((widget.lotto['piante']! - sommaPianteVassoiScansionati))
+                        .toString()
+                    : '${((piantePerVassoio * numeroVassoiScansionati!) - sommaPianteVassoiScansionati! as double).toInt()}',
                 radius: 60,
                 titleStyle: const TextStyle(
                   fontSize: 20,
