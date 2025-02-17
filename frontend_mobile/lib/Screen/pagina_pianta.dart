@@ -23,6 +23,7 @@ class LottoDetailPage extends StatefulWidget {
 class _LottoDetailPageState extends State<LottoDetailPage> {
   List<File> images = [];
   List<int> results = [];
+  List<int> apiResults = [];
 
   num? campionePiante;
   num? percentuale;
@@ -30,11 +31,22 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
   num? numeroVassoiScansionati;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print("update");
+    print(widget.lotto['scansioni']);
+    if (widget.lotto['scansioni'] != null) {
+      apiResults = List<int>.from(widget.lotto['scansioni'] as List<dynamic>);
+      setState(() {});
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
     print(widget.lotto['scansioni']);
     if (widget.lotto['scansioni'] != null) {
-      results = List<int>.from(widget.lotto['scansioni'] as List<dynamic>);
+      apiResults = List<int>.from(widget.lotto['scansioni'] as List<dynamic>);
 
       setState(() {});
     }
@@ -328,7 +340,9 @@ class _LottoDetailPageState extends State<LottoDetailPage> {
                 ),
               ],
               if (percentuale != null && campionePiante != null) ...analysis,
-              if (percentuale == null && results.isNotEmpty) ...analysis
+              if (images.isEmpty &&
+                  (percentuale == null && apiResults.isNotEmpty))
+                ...analysis
               /*if (_image != null)
                 Center(
                   child: Column(

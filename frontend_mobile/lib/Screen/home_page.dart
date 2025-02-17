@@ -280,14 +280,17 @@ class _HomeState extends State<Home> {
                         sowingDate: DateTime.fromMillisecondsSinceEpoch(
                           (lotto['data_semina'] as int),
                         ),
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
                                   LottoDetailPage(lotto: lotto),
                             ),
                           );
+
+                          // Aggiorna la lista dei lotti
+                          await _fetchUserLotti();
                         },
                       ),
                   ]
